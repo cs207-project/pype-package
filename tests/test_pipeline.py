@@ -1,7 +1,7 @@
-from .lexer import lexer
-from .parser import parser
-from .semantic_analysis import CheckSingleAssignment, PrettyPrint
-from .translate import SymbolTableVisitor
+from pype.lexer import lexer
+from pype.parser import parser
+from pype.semantic_analysis import CheckSingleAssignment, PrettyPrint
+from pype.translate import SymbolTableVisitor
 
 class Pipeline(object):
   def __init__(self, source):
