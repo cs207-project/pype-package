@@ -19,15 +19,13 @@ class Pipeline(object):
     # Semantic analysis
     ast.walk( CheckSingleAssignment() )
     # Translation
-    # syms = ast.walk( SymbolTableVisitor())
+    syms = ast.walk( SymbolTableVisitor())
     # Pretty print symbol table
-    # syms.pprint()
-    # return syms
+    syms.pprint()
+    return syms
 
 def test_example0():
     t=Pipeline('./samples/example0.ppl')
 
 def test_example1():
     t=Pipeline('./samples/example1.ppl')
-test_example0()
-test_example1()
