@@ -61,9 +61,58 @@ class Flowgraph(object):
   def post(self, nodeid):
     return [i for (i,n) in self.nodes.items() if nodeid in self.nodes[i].inputs]
 
+  ''' 
+  Kahn algorithm, try both
   def topological_sort(self):
     # TODO : implement a topological sort
-    return [] # should return a list of node ids in sorted order
+    graph_sorted = []
+    for i in self.nodes.items():
+      print(i,'selfnodes\n')
+    graph_unsorted = list(self.nodes.keys())
+    print(graph_unsorted,'graph_unsorted\n')
+
+    while graph_unsorted:
+      acyclic = False
+      for node in graph_unsorted:
+        for edge in self.nodes[node].inputs:
+          if edge in graph_unsorted:
+            break
+        else:
+          acyclic = True
+          graph_unsorted.remove(node)
+          graph_sorted.append(node)
+      if not acyclic:
+        raise RuntimeError('A cyclic dependency occur')
+    print(graph_sorted,'graph_sorted')
+    return graph_sorted # should return a list of node ids in sorted order
+  '''
+
+  def recursive_visit(self, node, graph_sorted, graph_unsorted_keys):
+    if node in graph_sorted:
+      print("Not a Acyclic Condition")
+      return
+    else:
+      for n in self.nodes[node].inputs:
+        self.recursive_visit(n, graph_sorted, graph_unsorted_keys)
+      graph_sorted.append(node)
+      graph_unsorted_keys.remove(node)
+      return 
+
+
+  def topological_sort(self, debug = False):
+    graph_sorted = []
+    graph_unsorted_keys = list(self.nodes.keys())
+    graph_unsorted_kv = list(self.nodes.items())
+    length = len(graph_unsorted_keys)
+    while graph_unsorted_keys:
+      node = graph_unsorted_keys[0]
+      self.recursive_visit(node, graph_sorted, graph_unsorted_keys)
+    assert (len(graph_sorted)==length),'The length is wrong'
+    if debug:
+      print('Sorted Graph has order {}'.format(graph_sorted))
+    return graph_sorted
+
+
 
 class FGIR(object):
   def __init__(self):
@@ -81,6 +130,7 @@ class FGIR(object):
 
   def flowgraph_pass(self, flowgraph_optimizer):
     for component in self.graphs:
+     # print(self.graphs[component])
       fg = flowgraph_optimizer.visit(self.graphs[component])
       if fg is not None:
         self.graphs[component] = fg
@@ -99,3 +149,21 @@ class FGIR(object):
 
   def topological_node_pass(self, topo_optimizer):
     self.node_pass(topo_optimizer, topological=True)
+
+# for testing the sort
+FG = Flowgraph()
+A = FG.new_node(FGNodeType.unknown, 'A')
+B = FG.new_node(FGNodeType.unknown, 'B')
+C = FG.new_node(FGNodeType.unknown, 'C')
+D = FG.new_node(FGNodeType.unknown, 'D')
+#E = FG.new_node(FGNodeType.unknown, 'E')
+
+A.inputs = []
+B.inputs = []
+C.inputs = []
+D.inputs = []
+FG.topological_sort(1)
+
+x = FGIR()
+x.graphs['test'] = FG
+##??? x.flowgraph_pass(AssignmentEllision)

@@ -1,5 +1,5 @@
-from .fgir import *
-from .error import *
+from fgir import *
+from error import *
 
 # Optimization pass interfaces
 
@@ -38,6 +38,41 @@ class AssignmentEllision(FlowgraphOptimization):
 
   def visit(self, flowgraph):
     # TODO: implement this
+    #print(flowgraph.variables.items())
+    #print(flowgraph)
+
+    # reversed k, v in origin dict
+    var_v_k = dict(map(reversed, flowgraph.variables.items()))
+    n_keys = var_v_k.keys()
+    n_values = var_v_k.values()
+
+    # storage of deleting nodes
+    delNodes = [] # store the deleting nodes
+    for nodes in flowgraph.variables.items():
+
+      # find assignment nodes
+      if nodes[1].type == FGNodeType.assignment:
+
+        # get its pre-denpendencies
+        delNodes.append(nodes[0])
+        pred = (nodes[1].inputs)[-1]
+        del (nodes[1].inputs)[-1]
+
+      # change name and connect pre-post dependencies edges
+        if nodes[0] in n_keys:
+          flowgraph.variables[var_v_k[nodes[0]]] = pred
+
+        for n_nodes in flowgraph.nodes.items():
+
+        # reconnect all the nodes
+          if nodes[0] in n_nodes[1].inputs:
+
+          # delect those edges that connected with the assignment nodes
+            n_nodes[1].inputs = [a for a in n_nodes[1] if a != nodes[0]]
+            n_nodes[1].inputs.append(pred)
+    for n in delNodes:
+      del flowgraph.nodes[n]
+
     return flowgraph
 
 
@@ -58,3 +93,6 @@ class DeadCodeElimination(FlowgraphOptimization):
   def visit(self, flowgraph):
     # TODO: implement this
     return flowgraph
+x = FGIR()
+x.graphs['test'] = FG
+print(x.flowgraph_pass(AssignmentEllision())),'===================='
