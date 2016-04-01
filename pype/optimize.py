@@ -37,44 +37,57 @@ class AssignmentEllision(FlowgraphOptimization):
   their pre- and post-dependencies.'''
 
   def visit(self, flowgraph):
-    # TODO: implement this
-    #print(flowgraph.variables.items())
-    #print(flowgraph)
 
     # reversed k, v in origin dict
     var_v_k = dict(map(reversed, flowgraph.variables.items()))
     n_keys = var_v_k.keys()
     n_values = var_v_k.values()
 
+
     # storage of deleting nodes
-    delNodes = [] # store the deleting nodes
-    for nodes in flowgraph.variables.items():
+    assignment = [] # store the deleting nodes
+    for id_,node in flowgraph.nodes.items():
 
       # find assignment nodes
-      if nodes[1].type == FGNodeType.assignment:
+      if node.type == FGNodeType.assignment:
 
         # get its pre-denpendencies
-        delNodes.append(nodes[0])
-        pred = (nodes[1].inputs)[-1]
-        del (nodes[1].inputs)[-1]
+        assignment.append(id_)
+
+        if node.inputs:
+          pred_id = (node.inputs)[-1]
+
+          del (node.inputs)[-1]
+        else:
+          raise ValueError('Assignment Node has no input')
+
 
       # change name and connect pre-post dependencies edges
-        if nodes[0] in n_keys:
-          flowgraph.variables[var_v_k[nodes[0]]] = pred
+      # changing the flowgraph vairable dictionary
+        #print(n_keys)
+        if id_ in n_keys:
+          str_name = var_v_k[id_]
+          #print(str_name)
+          flowgraph.variables[str_name] = pred_id
 
         for n_nodes in flowgraph.nodes.items():
 
         # reconnect all the nodes
-          if nodes[0] in n_nodes[1].inputs:
+          if id_ in n_nodes[1].inputs:
+           # print(id_)
 
           # delect those edges that connected with the assignment nodes
-            n_nodes[1].inputs = [a for a in n_nodes[1] if a != nodes[0]]
-            n_nodes[1].inputs.append(pred)
-    for n in delNodes:
+            new_input = []
+            for a in n_nodes[1].inputs:
+              if a != id_:
+                new_input.append(a)
+            new_input.append(pred_id)
+            n_nodes[1].inputs = new_input
+
+    for n in assignment:
       del flowgraph.nodes[n]
 
     return flowgraph
-
 
 class DeadCodeElimination(FlowgraphOptimization):
   '''Eliminates unreachable expression statements.
@@ -116,13 +129,18 @@ class DeadCodeElimination(FlowgraphOptimization):
 
 x = FGIR()
 x.graphs['test'] = FG
-print(FG.nodes)
-testDeadCodeElimination = DeadCodeElimination()
+with open('original.dot','w') as file_:
+  file_.write(FG.dotfile())
+#print(FG.nodes)
+#testDeadCodeElimination = DeadCodeElimination()
 # after this Dead Code Elimination, @N5 will be deleted
 # testDeadCodeElimination.visit(FG)
 test_AE = AssignmentEllision()
 test_AE.visit(FG)
-print(FG.nodes)
-print(FG.dotfile())
-# print(x.flowgraph_pass(AssignmentEllision()), 'optimized')
+#print(FG.nodes)
+ea=FG.dotfile()
+#print(x.flowgraph_pass(AssignmentEllision()), 'EA optimized')
+with open('ea.dot', 'w') as file_:
+    file_.write(ea)
+
 # print(x.flowgraph_pass(DeadCodeElimination()), 'optimized')

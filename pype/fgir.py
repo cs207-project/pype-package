@@ -89,7 +89,7 @@ class Flowgraph(object):
 
   def recursive_visit(self, node, graph_sorted, graph_unsorted_keys):
     if node in graph_sorted:
-      print("Not a Acyclic Condition")
+      #print("Hit the bottom")
       return
     else:
       for n in self.nodes[node].inputs:
@@ -107,7 +107,7 @@ class Flowgraph(object):
     while graph_unsorted_keys:
       node = graph_unsorted_keys[0]
       self.recursive_visit(node, graph_sorted, graph_unsorted_keys)
-    assert (len(graph_sorted)==length),'The length is wrong'
+    #assert (len(graph_sorted)==length),'The length is wrong'
     if debug:
       print('Sorted Graph has order {}'.format(graph_sorted))
     return graph_sorted
@@ -148,7 +148,7 @@ class FGIR(object):
           fg.nodes[node] = n
 
   def topological_node_pass(self, topo_optimizer):
-    self.node_pass(topo_optimizer, topological=True)
+    self.node_pass(topo_optimizer, topological = True)
 
 # for testing the sort (test case from Pype Part 3 explanation)
 # just refer to Pype 3 part 3 graph
@@ -160,7 +160,8 @@ C = FG.new_node(FGNodeType.unknown, 'n2')
 D = FG.new_node(FGNodeType.unknown, 'z')
 E = FG.new_node(FGNodeType.unknown, 'n4')
 F = FG.new_node(FGNodeType.assignment, 'n5') #this is dead code for test
-H = FG.new_node(FGNodeType.assignment, 'n6')
+H = FG.new_node(FGNodeType.unknown, 'n6')
+I = FG.new_node(FGNodeType.unknown, 'n7')
 
 A.inputs = []
 B.inputs = []
@@ -168,12 +169,12 @@ C.inputs = ['@N0','@N1']
 D.inputs = ['@N2']
 E.inputs = ['@N3']
 F.inputs = ['@N6']
-
+I.inputs = ['@N5']
 FG.topological_sort(True)
 FG.outputs = ['@N4']
 # print(FG.inputs)
 
 x = FGIR()
 x.graphs['test'] = FG
-print(x.graphs['test'].dotfile())
+print(x.graphs['test'].dotfile(), 'original graph')
 ##??? x.flowgraph_pass(AssignmentEllision)
