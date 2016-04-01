@@ -159,14 +159,15 @@ B = FG.new_node(FGNodeType.unknown, 'y')
 C = FG.new_node(FGNodeType.unknown, 'n2')
 D = FG.new_node(FGNodeType.unknown, 'z')
 E = FG.new_node(FGNodeType.unknown, 'n4')
-F = FG.new_node(FGNodeType.unknown, 'n5') #this is dead code for test
+F = FG.new_node(FGNodeType.assignment, 'n5') #this is dead code for test
+H = FG.new_node(FGNodeType.assignment, 'n6')
 
 A.inputs = []
 B.inputs = []
 C.inputs = ['@N0','@N1']
 D.inputs = ['@N2']
 E.inputs = ['@N3']
-F.inputs = ['@N0', '@N1']
+F.inputs = ['@N6']
 
 FG.topological_sort(True)
 FG.outputs = ['@N4']

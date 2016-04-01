@@ -48,7 +48,7 @@ class AssignmentEllision(FlowgraphOptimization):
 
     # storage of deleting nodes
     delNodes = [] # store the deleting nodes
-    for nodes in flowgraph.nodes.items():
+    for nodes in flowgraph.variables.items():
 
       # find assignment nodes
       if nodes[1].type == FGNodeType.assignment:
