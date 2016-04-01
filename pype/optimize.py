@@ -48,7 +48,7 @@ class AssignmentEllision(FlowgraphOptimization):
 
     # storage of deleting nodes
     delNodes = [] # store the deleting nodes
-    for nodes in flowgraph.variables.items():
+    for nodes in flowgraph.nodes.items():
 
       # find assignment nodes
       if nodes[1].type == FGNodeType.assignment:
@@ -119,8 +119,10 @@ x.graphs['test'] = FG
 print(FG.nodes)
 testDeadCodeElimination = DeadCodeElimination()
 # after this Dead Code Elimination, @N5 will be deleted
-testDeadCodeElimination.visit(FG)
+# testDeadCodeElimination.visit(FG)
+test_AE = AssignmentEllision()
+test_AE.visit(FG)
 print(FG.nodes)
 print(FG.dotfile())
 # print(x.flowgraph_pass(AssignmentEllision()), 'optimized')
-print(x.flowgraph_pass(DeadCodeElimination()), 'optimized')
+# print(x.flowgraph_pass(DeadCodeElimination()), 'optimized')
