@@ -92,7 +92,35 @@ class DeadCodeElimination(FlowgraphOptimization):
 
   def visit(self, flowgraph):
     # TODO: implement this
+
+    # visit all reachable variables
+    visited, queue = set(), flowgraph.outputs # [nodeid]
+    while queue:
+      vertex = queue.pop(0)
+      if vertex not in visited:
+        visited.add(vertex) # nodeid
+        queue.extend(set(flowgraph.nodes[vertex].inputs) - visited) # nodeid
+
+    # to get non-reachable nodes from output
+    non_reachables = flowgraph.nodes.keys() - visited
+
+    # non_reachables except inputs
+    non_reachables = non_reachables - set(flowgraph.inputs)
+
+    # delete each of them in non_reachables from flowgraph.nodes
+    for node in non_reachables:
+      del flowgraph.nodes[node]
+
     return flowgraph
+
+
 x = FGIR()
 x.graphs['test'] = FG
-print(x.flowgraph_pass(AssignmentEllision())),'===================='
+print(FG.nodes)
+testDeadCodeElimination = DeadCodeElimination()
+# after this Dead Code Elimination, @N5 will be deleted
+testDeadCodeElimination.visit(FG)
+print(FG.nodes)
+print(FG.dotfile())
+# print(x.flowgraph_pass(AssignmentEllision()), 'optimized')
+print(x.flowgraph_pass(DeadCodeElimination()), 'optimized')

@@ -150,20 +150,29 @@ class FGIR(object):
   def topological_node_pass(self, topo_optimizer):
     self.node_pass(topo_optimizer, topological=True)
 
-# for testing the sort
-FG = Flowgraph()
-A = FG.new_node(FGNodeType.unknown, 'A')
-B = FG.new_node(FGNodeType.unknown, 'B')
-C = FG.new_node(FGNodeType.unknown, 'C')
-D = FG.new_node(FGNodeType.unknown, 'D')
-#E = FG.new_node(FGNodeType.unknown, 'E')
+# for testing the sort (test case from Pype Part 3 explanation)
+# just refer to Pype 3 part 3 graph
+FG = Flowgraph('TEST_1')
+
+A = FG.new_node(FGNodeType.unknown, 'x')
+B = FG.new_node(FGNodeType.unknown, 'y')
+C = FG.new_node(FGNodeType.unknown, 'n2')
+D = FG.new_node(FGNodeType.unknown, 'z')
+E = FG.new_node(FGNodeType.unknown, 'n4')
+F = FG.new_node(FGNodeType.unknown, 'n5') #this is dead code for test
 
 A.inputs = []
 B.inputs = []
-C.inputs = []
-D.inputs = []
-FG.topological_sort(1)
+C.inputs = ['@N0','@N1']
+D.inputs = ['@N2']
+E.inputs = ['@N3']
+F.inputs = ['@N0', '@N1']
+
+FG.topological_sort(True)
+FG.outputs = ['@N4']
+# print(FG.inputs)
 
 x = FGIR()
 x.graphs['test'] = FG
+print(x.graphs['test'].dotfile())
 ##??? x.flowgraph_pass(AssignmentEllision)

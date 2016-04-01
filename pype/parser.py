@@ -1,7 +1,6 @@
 import ply.yacc
-
-from .lexer import tokens,reserved
-from .ast import *
+from lexer import tokens,reserved
+from ast import *
 
 # Here's an example production rule which constructs an AST node
 def p_program(p):
