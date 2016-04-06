@@ -1,5 +1,6 @@
-from fgir import *
-from error import *
+from .fgir import *
+from .error import *
+import copy
 
 # Optimization pass interfaces
 
@@ -107,7 +108,7 @@ class DeadCodeElimination(FlowgraphOptimization):
     # TODO: implement this
 
     # visit all reachable variables
-    visited, queue = set(), flowgraph.outputs # [nodeid]
+    visited, queue = set(), copy.deepcopy(flowgraph.outputs) # [nodeid]
     while queue:
       vertex = queue.pop(0)
       if vertex not in visited:
@@ -127,20 +128,25 @@ class DeadCodeElimination(FlowgraphOptimization):
     return flowgraph
 
 
-x = FGIR()
-x.graphs['test'] = FG
-with open('original.dot','w') as file_:
-  file_.write(FG.dotfile())
+# x = FGIR()
+# x.graphs['test'] = FG
+# with open('original.dot','w') as file_:
+#   file_.write(FG.dotfile())
+# print(FG.dotfile())
+
+
 #print(FG.nodes)
-#testDeadCodeElimination = DeadCodeElimination()
+# testDeadCodeElimination = DeadCodeElimination()
 # after this Dead Code Elimination, @N5 will be deleted
 # testDeadCodeElimination.visit(FG)
-test_AE = AssignmentEllision()
-test_AE.visit(FG)
+# test_AE = AssignmentEllision()
+# test_AE.visit(FG)
 #print(FG.nodes)
-ea=FG.dotfile()
+# ea=FG.dotfile()
+
+# print('ea', ea)
 #print(x.flowgraph_pass(AssignmentEllision()), 'EA optimized')
-with open('ea.dot', 'w') as file_:
-    file_.write(ea)
+# with open('ea.dot', 'w') as file_:
+#     file_.write(ea)
 
 # print(x.flowgraph_pass(DeadCodeElimination()), 'optimized')
