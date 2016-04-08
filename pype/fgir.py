@@ -168,3 +168,32 @@ class FGIR(object):
       fg = topo_flowgraph_optimizer.visit(self.graphs[name])
       if fg is not None:
         self.graphs[name] = fg
+
+# for testing the sort (test case from Pype Part 3 explanation)
+# just refer to Pype 3 part 3 graph
+FG = Flowgraph('TEST_1')
+
+A = FG.new_node(FGNodeType.unknown, 'x')
+B = FG.new_node(FGNodeType.unknown, 'y')
+C = FG.new_node(FGNodeType.unknown, 'n2')
+D = FG.new_node(FGNodeType.assignment, 'z')
+E = FG.new_node(FGNodeType.unknown, 'n4')
+F = FG.new_node(FGNodeType.assignment, 'n5') #this is dead code for test
+H = FG.new_node(FGNodeType.unknown, 'n6')
+I = FG.new_node(FGNodeType.unknown, 'n7')
+
+A.inputs = []
+B.inputs = []
+C.inputs = ['@N0','@N1']
+D.inputs = ['@N2']
+E.inputs = ['@N3']
+F.inputs = ['@N6']
+I.inputs = ['@N5']
+FG.topological_sort(False)
+FG.outputs = ['@N4']
+# print(FG.inputs)
+
+x = FGIR()
+x.graphs['test'] = FG
+# print(x.graphs['test'].dotfile(), 'original graph')
+#??? x.flowgraph_pass(AssignmentEllision)

@@ -30,6 +30,7 @@ class PCodeOp(object):
   async def libraryfunction(in_qs, out_qs, function_ref):
     def f(*inputs):
       # TODO
+      pass
     await PCodeOp._node(in_qs, out_qs, f)
 
   @staticmethod
