@@ -167,14 +167,17 @@ class InlineComponents(TopologicalFlowgraphOptimization):
     self.component_cache[flowgraph.name] = flowgraph
     return flowgraph
 
-#define mul flowgraph
+# #define mul flowgraph
 # MFG = Flowgraph('mul')
 #
 # x = MFG.new_node(FGNodeType.input, 'x')
 # y = MFG.new_node(FGNodeType.input, 'y')
 # mul = MFG.new_node(FGNodeType.assignment, 'mul') # Not sure about this, where to impleliment multiplication??
 # z = MFG.new_node(FGNodeType.output, 'z')
-#
+# MFG.set_var('x', '@N0')
+# MFG.set_var('y', '@N1')
+# MFG.set_var('mul', '@N2')
+# MFG.set_var('z', '@N3')
 # mul.inputs = ['@N0','@N1']
 # MFG.topological_sort(False)
 # MFG.inputs = ['@N0', '@N1']
@@ -190,6 +193,13 @@ class InlineComponents(TopologicalFlowgraphOptimization):
 # mul2 = DistFG.new_node(FGNodeType.component, 'mul')
 # add =  DistFG.new_node(FGNodeType.assignment, 'add')
 # c = DistFG.new_node(FGNodeType.output, 'c')
+# DistFG.set_var('a', '@N0')
+# DistFG.set_var('b', '@N1')
+# DistFG.set_var('mul1', '@N2')
+# DistFG.set_var('mul2', '@N3')
+# DistFG.set_var('add', '@N4')
+# DistFG.set_var('c', '@N5')
+#
 # mul1.inputs = ['@N0','@N1']
 # mul2.inputs = ['@N0','@N1']
 # add.inputs = ['@N2', '@N3']
@@ -202,7 +212,7 @@ class InlineComponents(TopologicalFlowgraphOptimization):
 # inline_graphs.graphs['mul'] = MFG
 # inline_graphs.graphs['dist'] = DistFG
 
-
+#
 # def test_InlineComponents():
 #     test_inline = copy.deepcopy(inline_graphs)
 #     print('before', test_inline.graphs['dist'].nodes.values())
@@ -212,7 +222,7 @@ class InlineComponents(TopologicalFlowgraphOptimization):
 #     # assert set(test_fg.nodes.keys()) == set(['@N6', '@N0', '@N1', '@N7', '@N2', '@N4'])
 #     results =[i for i in test_inline.graphs['dist'].nodes.values() if i.type==FGNodeType.component]
 #     assert  len(results) == 0
-
+#
 # def test_InlineComponents():
 #     test_inline = copy.deepcopy(inline_graphs)
 #     test_ic = InlineComponents()
