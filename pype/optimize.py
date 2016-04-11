@@ -137,7 +137,6 @@ class InlineComponents(TopologicalFlowgraphOptimization):
   Topological order guarantees that we inline components before they are invoked.'''
   def __init__(self):
     self.component_cache = {}
-
   def visit(self, flowgraph):
     for (cnode_id, cnode) in [(nid,n) for (nid,n) in flowgraph.nodes.items() if n.type==FGNodeType.component]:
       target = self.component_cache[cnode.ref]
@@ -168,3 +167,73 @@ class InlineComponents(TopologicalFlowgraphOptimization):
     self.component_cache[flowgraph.name] = flowgraph
     return flowgraph
 
+#define mul flowgraph
+# MFG = Flowgraph('mul')
+#
+# x = MFG.new_node(FGNodeType.input, 'x')
+# y = MFG.new_node(FGNodeType.input, 'y')
+# mul = MFG.new_node(FGNodeType.assignment, 'mul') # Not sure about this, where to impleliment multiplication??
+# z = MFG.new_node(FGNodeType.output, 'z')
+#
+# mul.inputs = ['@N0','@N1']
+# MFG.topological_sort(False)
+# MFG.inputs = ['@N0', '@N1']
+# MFG.outputs = ['@N3']
+# # print(FG.inputs)
+#
+# #define dist flowgraph
+# DistFG = Flowgraph('dist')
+#
+# a = DistFG.new_node(FGNodeType.input, 'a')
+# b = DistFG.new_node(FGNodeType.input, 'b')
+# mul1 = DistFG.new_node(FGNodeType.component, 'mul') # Not sure about this, where to impleliment multiplication??
+# mul2 = DistFG.new_node(FGNodeType.component, 'mul')
+# add =  DistFG.new_node(FGNodeType.assignment, 'add')
+# c = DistFG.new_node(FGNodeType.output, 'c')
+# mul1.inputs = ['@N0','@N1']
+# mul2.inputs = ['@N0','@N1']
+# add.inputs = ['@N2', '@N3']
+# c.inputs = ['@N4']
+# DistFG.inputs = ['@N0', '@N1']
+# DistFG.outputs = ['@N5']
+# DistFG.topological_sort(False)
+#
+# inline_graphs = FGIR()
+# inline_graphs.graphs['mul'] = MFG
+# inline_graphs.graphs['dist'] = DistFG
+
+
+# def test_InlineComponents():
+#     test_inline = copy.deepcopy(inline_graphs)
+#     print('before', test_inline.graphs['dist'].nodes.values())
+#     test_ic = InlineComponents()
+#     test_inline.topological_flowgraph_pass(test_ic)
+#     # print(test_fg.nodes.keys())
+#     # assert set(test_fg.nodes.keys()) == set(['@N6', '@N0', '@N1', '@N7', '@N2', '@N4'])
+#     results =[i for i in test_inline.graphs['dist'].nodes.values() if i.type==FGNodeType.component]
+#     assert  len(results) == 0
+
+# def test_InlineComponents():
+#     test_inline = copy.deepcopy(inline_graphs)
+#     test_ic = InlineComponents()
+#     test_inline.topological_flowgraph_pass(test_ic)
+#     assert FGNodeType.component not in [i for i in test_inline.graphs['dist'].nodes.values()]
+#
+# def test_InlineComponents_inputs():
+#     test_inline = copy.deepcopy(inline_graphs)
+#     pre_inputs = test_inline.graphs['dist'].inputs
+#     test_ic = InlineComponents()
+#     test_inline.topological_flowgraph_pass(test_ic)
+#     post_inputs = test_inline.graphs['dist'].inputs
+#     assert pre_inputs == post_inputs
+#
+# def test_InlineComponents_outputs():
+#     test_inline = copy.deepcopy(inline_graphs)
+#     pre_outputs = test_inline.graphs['dist'].outputs
+#     test_ic = InlineComponents()
+#     test_inline.topological_flowgraph_pass(test_ic)
+#     post_outputs = test_inline.graphs['dist'].outputs
+#     assert pre_outputs == post_outputs
+# test_InlineComponents()
+# test_InlineComponents_inputs()
+# test_InlineComponents_outputs()
