@@ -15,10 +15,13 @@ class PCodeOp(object):
     `in_qs`: an ordered list of asyncio.Queues() which hold the node's inputs.
     `out_qs`: a list of asyncio.Queues() into which the function's output should go
     `func`: the function to apply to the inputs which produces the output value'''
-    # TODO
     # hint: look at asyncio.gather
+    input_generator = (in_q.get() for in_q in in_qs)
+    inputs = await asyncio.gather(*input_generator)
     # hint: the same return value of the function is put in every output queue
-    pass
+    outputs = func(*inputs)
+    for out_q in out_qs:
+      await out_q.put(output)
 
   @staticmethod
   async def forward(in_qs, out_qs):
@@ -29,8 +32,7 @@ class PCodeOp(object):
   @staticmethod
   async def libraryfunction(in_qs, out_qs, function_ref):
     def f(*inputs):
-      # TODO
-      pass
+      return function_ref(*inputs)
     await PCodeOp._node(in_qs, out_qs, f)
 
   @staticmethod
@@ -98,10 +100,23 @@ class PCodeGenerator(FlowgraphOptimization):
     qs = {} # { (src,dst)=>asyncio.Queue(), ... }
 
     # Populate qs by iterating over inputs of every node
-    # TODO
     # hint: destination nodes should be in flowgraph nodes
     # hint: sources are their inputs
-    pass
+    visited_nodes = set()
+    def pop_qs(dest_nodes):
+      src_nodes = set()
+      for dest_node in dest_nodes:
+        input_nodes = set(flowgraph.pre(dest_node))
+        for input_node in input_nodes:
+          qs[(input_node, dest_node)] = asyncio.Queue()
+        src_nodes = src_nodes.union(input_nodes)
+        visited_nodes.add(dest_node)
+      # Make src nodes as new nodes and call pop_qs recursively
+      new_dest_nodes = src_nodes.difference(visited_nodes)
+      if new_dest_nodes:
+          pop_qs(new_dest_nodes)
+
+    pop_qs(flowgraph.outputs)
 
     # Add an extra input queue for each component input
     component_inputs = []

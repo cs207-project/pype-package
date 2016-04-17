@@ -62,32 +62,6 @@ class Flowgraph(object):
   def post(self, nodeid):
     return [i for (i,n) in self.nodes.items() if nodeid in self.nodes[i].inputs]
 
-  ''' 
-  Kahn algorithm, try both
-  def topological_sort(self):
-    # TODO : implement a topological sort
-    graph_sorted = []
-    for i in self.nodes.items():
-      print(i,'selfnodes\n')
-    graph_unsorted = list(self.nodes.keys())
-    print(graph_unsorted,'graph_unsorted\n')
-
-    while graph_unsorted:
-      acyclic = False
-      for node in graph_unsorted:
-        for edge in self.nodes[node].inputs:
-          if edge in graph_unsorted:
-            break
-        else:
-          acyclic = True
-          graph_unsorted.remove(node)
-          graph_sorted.append(node)
-      if not acyclic:
-        raise RuntimeError('A cyclic dependency occur')
-    print(graph_sorted,'graph_sorted')
-    return graph_sorted # should return a list of node ids in sorted order
-  '''
-
   def recursive_visit(self, node, graph_sorted, graph_unsorted_keys):
     if node in graph_sorted:
       #print("Hit the bottom")
